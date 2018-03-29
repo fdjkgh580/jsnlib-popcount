@@ -24,7 +24,7 @@ class Popcount
 	private $group;
 	
 	//短期間拜訪過?
-	private function could_reset ()
+	private function could_reset (): bool
 	{
 		$sess 			= $this->sess_name;
 		$id				= $this->primary_id;
@@ -35,11 +35,11 @@ class Popcount
 		
 		//相隔時間 = 現在時間 - 離開的最後時間 > 指定重算的時間
 		$T				= time() - $my_last_time;
-		return ($T >= $short) ? "1" : "0";
+		return ($T >= $short) ? true : false;
 	}
 	
 	//曾經拜訪過?
-	private function is_visit()
+	private function is_visit(): bool
 	{
 		$sess 	= $this->sess_name;
 		$id		= $this->primary_id;
@@ -48,25 +48,25 @@ class Popcount
 		//初次進入
 		if (empty($_SESSION[$sess][$group][$id])) 
 		{
-			return "0";
+			return false;
 		}
 	
 		$short = $this->could_reset();
-		if ($short == "1") 
+		if ($short == true) 
 		{
-			return "0";
+			return false;
 		}
-		return "1";
+		return true;
 	}
 	
 	//現在來了，所以+1
-	private function update_session()
+	private function update_session(): bool
 	{
 		$sess 	= $this->sess_name;
 		$id		= $this->primary_id;
 		$group	= $this->group;
 		$_SESSION[$sess][$group][$id]['time'] 	= time(); //紀錄近來的時間
-		return "1";
+		return true;
 	}
 	
 	/*
@@ -74,7 +74,7 @@ class Popcount
 	 * $group 當對象很多時，依照分類使用的群組，已不至於容易重複使用到同樣的primary_id
 	 * $primary_id識別的編號
 	 */
-	public function add($group, $primary_id) 
+	public function add($group, $primary_id): bool
 	{
 		$sess 				= $this->sess_name;
 		$this->primary_id 	= $primary_id;
@@ -82,8 +82,8 @@ class Popcount
 		
 		//曾來過？
 		$iscome = $this->is_visit();			
-		if ($iscome == "0") return $this->update_session();
-		else return "0";	
+		if ($iscome == false) return $this->update_session();
+		else return true;	
 	}
 
 	// 淨空 SESSION
