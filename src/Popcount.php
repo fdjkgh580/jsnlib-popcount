@@ -83,7 +83,7 @@ class Popcount
 		//曾來過？
 		$iscome = $this->is_visit();			
 		if ($iscome == false) return $this->update_session();
-		else return true;	
+		else return false;	
 	}
 
 	// 淨空 SESSION
